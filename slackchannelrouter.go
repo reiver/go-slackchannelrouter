@@ -3,6 +3,7 @@ package slackchannelrouter
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -48,7 +49,8 @@ type SlackChannelRouter struct {
 
 
 func (router *SlackChannelRouter) Route(message string, context map[string]interface{}) error {
-	return router.chatPostMessage(message, context)
+	err := router.chatPostMessage(message, context)
+	return err
 }
 
 
@@ -120,9 +122,49 @@ func (router *SlackChannelRouter) chatPostMessage(message string, context map[st
 		return err
 	}
 	defer httpResponse.Body.Close()
+
+	// Check that the APi told us the request
+	// went through OK.
 	body, err := ioutil.ReadAll(httpResponse.Body)
 	if nil != err {
 		return err
+	}
+
+	responseInfo := struct{
+		OK    bool   `json:"ok"`
+		Error string `json:"error"`
+	}{
+		OK:false,
+		Error:"",
+	}
+
+	if err := json.Unmarshal(body, &responseInfo); nil != err {
+		return err
+	}
+
+	if !responseInfo.OK {
+		switch responseInfo.Error {
+		case "channel_not_found":
+			return singletonChannelNotFoundComplainer
+		case "not_in_channel":
+			return singletonNotInChannelComplainer
+		case "is_archived":
+			return singletonIsArchivedComplainer
+		case "msg_too_long":
+			return singletonMsgTooLongComplainer
+		case "no_text":
+			return singletonNoTextComplainer
+		case "rate_limited":
+			return singletonRateLimitedComplainer
+		case "not_authed":
+			return singletonNotAuthedComplainer
+		case "invalid_auth":
+			return singletonInvalidAuthComplainer
+		case "account_inactive":
+			return singletonAccountInactiveComplainer
+		default:
+			return errors.New(responseInfo.Error)
+		}
 	}
 
 
