@@ -33,9 +33,9 @@ Putting this altogether, basic usage look something like this:
 
 Advange Usage
 
-You may want to modify the log before sending it Slack.
+You may want to modify the log before sending it to Slack.
 
-For example, if logged the following:
+For example, if you logged the following message:
 
 	flogger.Printf("Received error: %v", err)
 
