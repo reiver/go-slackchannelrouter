@@ -10,7 +10,7 @@ Slack's API servers (across the Internet) it can block for some time.
 To deal with this, it is recommended you wrap the Slack channel router in a flog.NonBlockingRouter.
 For example:
 
-	var slackChannelRouter Router = slackchannelrouter.New(token, channel, username, iconEmoji)
+	var slackChannelRouter flog.Router = slackchannelrouter.New(token, channel, username, iconEmoji)
 	
 	slackChannelRouter = flog.NewNonBlockingRouter(slackChannelRouter)
 
@@ -18,7 +18,7 @@ Basic Usage
 
 Putting this altogether, basic usage look something like this:
 
-	var slackChannelRouter Router = slackchannelrouter.New(token, channel, username, iconEmoji)
+	var slackChannelRouter flog.Router = slackchannelrouter.New(token, channel, username, iconEmoji)
 	
 	// Note that 'filterMessageForSlackFunc' is some func that decides which messages are
 	// allowed to get posted to Slack.
@@ -52,7 +52,7 @@ To do that we would use the flog.MappingRouter.
 
 So for example using that, plus also the flog.NonBlockingRouter mentioned already:
 
-	var slackChannelRouter Router = slackchannelrouter.New(token, channel, username, iconEmoji)
+	var slackChannelRouter flog.Router = slackchannelrouter.New(token, channel, username, iconEmoji)
 
 	slackChannelRouter = NewMappingRouter(slackChannelRouter, func(message string, context map[string]interface{})(string, map[string]interface{}){
 		newMessage := fmt.Sprintf("@group: %s :feelsgood:", message)
