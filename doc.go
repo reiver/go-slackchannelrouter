@@ -43,8 +43,8 @@ And again for example, let's say that message gets rendered as:
 
 	Received error: Could not connect to queue server.
 
-Then we might want to make this change the message into the following
-before posting it to Slack:
+Then we might want to change this message before posting it to Slack,
+as follows:
 
 	@group: Received error: Could not connect to queue server. :feelsgood:
 
